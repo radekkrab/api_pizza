@@ -1,0 +1,27 @@
+services:
+  nginx:
+    image: nginx:latest
+    volumes:
+      - ./:/var/www
+      - ./_docker/nginx/conf.d/:/etc/nginx/conf.d/
+    ports:
+      - "8976:80"
+    container_name: pizzaapi
+    depends_on:
+      - app
+
+  app:
+    build: 
+      context: .
+      dockerfile: _docker/app/Dockerfile
+    ports:
+      - "5173:5173"
+    environment:
+      - REDIS_URL=redis://redis:6379 # Убедитесь, что используете имя сервиса Redis
+    depends_on:
+      - redis
+
+  redis:
+    image: redis:latest
+    ports:
+      - "6379:6379"
